@@ -1,6 +1,7 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
+import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { useState } from 'react';
 
 export type BookingHost = {
@@ -73,7 +74,7 @@ export function BookingFlow({
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', stiffness: 220, damping: 24 }}
-            className="absolute inset-x-0 bottom-0 mx-auto max-w-[430px] rounded-t-[32px] bg-white pb-4 shadow-[0_-20px_50px_rgba(15,23,42,0.18)]"
+            className="absolute inset-x-0 bottom-0 mx-auto max-w-[430px] rounded-t-[32px] bg-white pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-[0_-20px_50px_rgba(15,23,42,0.18)]"
           >
             <div className="mx-auto mt-3 h-1.5 w-12 rounded-full bg-slate-200" />
 
@@ -86,9 +87,9 @@ export function BookingFlow({
                 type="button"
                 aria-label="Close booking sheet"
                 onClick={onClose}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-lg text-slate-600"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-600"
               >
-                ✕
+                <X className="h-4 w-4" aria-hidden="true" />
               </button>
             </div>
 
@@ -109,7 +110,7 @@ export function BookingFlow({
               </div>
             </div>
 
-            <div className="max-h-[58vh] overflow-y-auto px-4 pb-20 pt-4">
+            <div className="max-h-[58dvh] overflow-y-auto px-4 pb-20 pt-4">
               {currentStep === 0 && (
                 <div>
                   <h4 className="text-lg font-bold text-slate-900">Choose a date</h4>
@@ -261,7 +262,7 @@ export function BookingFlow({
               )}
             </div>
 
-            <div className="absolute inset-x-0 bottom-0 border-t border-slate-200 bg-white px-4 pb-4 pt-3">
+            <div className="absolute inset-x-0 bottom-0 border-t border-slate-200 bg-white px-4 pb-4 pt-3 safe-bottom">
               <div className="flex items-center gap-3">
                 {currentStep > 0 && (
                   <button
@@ -269,7 +270,10 @@ export function BookingFlow({
                     onClick={handleBack}
                     className="min-h-[44px] flex-1 rounded-full border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700"
                   >
-                    Back
+                    <span className="inline-flex items-center gap-2">
+                      <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+                      Back
+                    </span>
                   </button>
                 )}
 
@@ -278,7 +282,10 @@ export function BookingFlow({
                   onClick={handleNext}
                   className="min-h-[44px] flex-1 rounded-full bg-orange-500 px-3 text-sm font-semibold text-white shadow-lg shadow-orange-200"
                 >
-                  {currentStep === 4 ? `Pay $${total.toFixed(2)}` : 'Continue'}
+                  <span className="inline-flex items-center justify-center gap-2">
+                    {currentStep === 4 ? `Pay $${total.toFixed(2)}` : 'Continue'}
+                    {currentStep < 4 && <ChevronRight className="h-4 w-4" aria-hidden="true" />}
+                  </span>
                 </button>
               </div>
             </div>

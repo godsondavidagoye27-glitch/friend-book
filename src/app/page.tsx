@@ -1,340 +1,172 @@
-'use client';
+import Link from 'next/link';
+import { ArrowRight, CheckCircle2, MapPinned, ShieldCheck, Sparkles, Star } from 'lucide-react';
+import { Avatar } from '@/components/ui/avatar';
+import { RatingStars } from '@/components/ui/rating-stars';
+import { StatusChip } from '@/components/ui/status-chip';
 
-import { useState } from 'react';
-import { BookingFlow } from '@/components/booking-flow';
-import { MobileShell } from '@/components/mobile-shell';
-
-const categories = ['Yoga', 'Conversation', 'Football', 'Walks', 'Language', 'Gym'];
-
-const hosts = [
+const steps = [
   {
-    id: 1,
-    name: 'Maya Lee',
-    location: '1.2 km away',
-    price: 28,
-    rating: 4.9,
-    reviews: 18,
-    category: 'Conversation',
-    image:
-      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=900&q=80',
-    verified: true,
-    position: 'left-[18%] top-[18%]',
+    title: 'Browse nearby hosts',
+    description: 'Explore local people by vibe, activity, and distance.',
+    icon: MapPinned,
   },
   {
-    id: 2,
-    name: 'Daniel Cruz',
-    location: '2.4 km away',
-    price: 35,
-    rating: 4.8,
-    reviews: 32,
-    category: 'Football',
-    image:
-      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=900&q=80',
-    verified: true,
-    position: 'left-[60%] top-[34%]',
+    title: 'Pick a social plan',
+    description: 'Choose a meetup time and confirm the flow in a few steps.',
+    icon: Star,
   },
   {
-    id: 3,
-    name: 'Noor Hassan',
-    location: '0.8 km away',
-    price: 24,
-    rating: 4.7,
-    reviews: 12,
-    category: 'Language',
-    image:
-      'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=900&q=80',
-    verified: true,
-    position: 'left-[40%] top-[58%]',
-  },
-  {
-    id: 4,
-    name: 'Ari Gomez',
-    location: '2.9 km away',
-    price: 31,
-    rating: 4.9,
-    reviews: 29,
-    category: 'Walks',
-    image:
-      'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=900&q=80',
-    verified: true,
-    position: 'left-[64%] top-[72%]',
+    title: 'Meet safely',
+    description: 'Stay in public places, share trip details, and report concerns quickly.',
+    icon: ShieldCheck,
   },
 ];
 
-const reviews = [
-  { name: 'Amina', rating: 5, text: 'Great energy and super easy to talk to.' },
-  { name: 'Leo', rating: 5, text: 'Perfect guide for a casual evening walk.' },
-  { name: 'Sam', rating: 4, text: 'Helpful and punctual — highly recommended.' },
+const categories = ['Conversation', 'Walking', 'Fitness', 'Language', 'City Guide', 'Coffee'];
+
+const sampleHosts = [
+  { name: 'Maya Lee', role: 'Conversation • City Guide', rating: 4.9, verified: true },
+  { name: 'Daniel Cruz', role: 'Football • Walking', rating: 4.8, verified: true },
+  { name: 'Noor Hassan', role: 'Language • Coffee', rating: 4.7, verified: true },
+];
+
+const faqs = [
+  { question: 'Is this a dating app?', answer: 'No. FriendBook is for social plans, shared activities, and real-life meetups.' },
+  { question: 'Do I need to verify my profile?', answer: 'Hosts are verified and public safety checks are built into the app experience.' },
+  { question: 'Can I use it as a guest?', answer: 'You can browse the public pages without an account, but the full experience is for signed-in users.' },
 ];
 
 export default function HomePage() {
-  const [activeTab, setActiveTab] = useState('explore');
-  const [isBookingOpen, setIsBookingOpen] = useState(false);
-  const [selectedHost, setSelectedHost] = useState(hosts[0]);
-
-  const openBooking = (host: (typeof hosts)[number]) => {
-    setSelectedHost(host);
-    setIsBookingOpen(true);
-  };
-
   return (
-    <>
-      <BookingFlow
-        host={{
-          id: selectedHost.id,
-          name: selectedHost.name,
-          price: selectedHost.price,
-          category: selectedHost.category,
-          verified: selectedHost.verified,
-        }}
-        isOpen={isBookingOpen}
-        onClose={() => setIsBookingOpen(false)}
-      />
-
-      <MobileShell activeTab={activeTab} onTabChange={setActiveTab}>
-      {activeTab === 'map' ? (
-        <div className="relative h-[calc(100dvh-118px)] overflow-hidden bg-[#eaf5f3]">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.9),rgba(255,255,255,0)_30%),linear-gradient(135deg,#dff3ed_0%,#eaf5f3_30%,#dfeef8_100%)]" />
-
-          <div className="absolute inset-0 opacity-60">
-            <div className="absolute left-[12%] top-[10%] h-[1px] w-[72%] -rotate-12 bg-white/80" />
-            <div className="absolute left-[20%] top-[52%] h-[1px] w-[65%] rotate-12 bg-white/80" />
-            <div className="absolute left-[8%] top-[28%] h-[52%] w-[1px] -rotate-8 bg-white/70" />
-            <div className="absolute left-[44%] top-[8%] h-[60%] w-[1px] rotate-12 bg-white/70" />
-            <div className="absolute left-[18%] top-[18%] h-20 w-20 rounded-full border border-white/70" />
-            <div className="absolute right-[16%] top-[22%] h-24 w-24 rounded-full border border-white/70" />
-            <div className="absolute bottom-[18%] left-[14%] h-24 w-24 rounded-full border border-white/70" />
+    <div className="min-h-dvh bg-[#fffaf5] pb-10 text-slate-900">
+      <header className="mx-auto w-full max-w-[430px] px-4 pb-4 pt-5">
+        <nav className="flex items-center justify-between text-sm text-slate-600">
+          <div className="font-semibold uppercase tracking-[0.2em] text-orange-600">FriendBook</div>
+          <div className="flex items-center gap-2">
+            <Link href="/help" className="rounded-full px-3 py-2 transition hover:bg-slate-100">Help</Link>
+            <Link href="/login" className="rounded-full bg-slate-900 px-3 py-2 font-medium text-white">Log in</Link>
           </div>
+        </nav>
+      </header>
 
-          <div className="absolute left-4 right-4 top-4 z-10 flex items-center justify-between gap-3">
-            <div className="rounded-full bg-white/85 px-3 py-2 text-xs font-semibold text-slate-700 shadow-soft backdrop-blur">
-              San Francisco • 3.1 km
-            </div>
-            <button type="button" className="min-h-[44px] rounded-full bg-slate-900 px-3 text-xs font-semibold text-white shadow-soft">
-              Use my location
-            </button>
+      <main className="mx-auto flex w-full max-w-[430px] flex-col gap-6 px-4">
+        <section className="rounded-[30px] bg-gradient-to-br from-orange-500 via-orange-400 to-amber-300 p-5 text-white shadow-lg shadow-orange-200">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-orange-100">Book real social time</p>
+          <h1 className="mt-3 text-3xl font-black leading-tight">Meet people nearby who want the same vibe.</h1>
+          <p className="mt-3 text-sm leading-6 text-orange-50">
+            Find a host, start a conversation, and plan a low-pressure meetup in your area.
+          </p>
+          <div className="mt-5 flex gap-3">
+            <Link href="/explore" className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-slate-900 px-4 py-3 text-sm font-semibold text-white">
+              Get started <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </Link>
+            <Link href="/become-host" className="inline-flex flex-1 items-center justify-center rounded-full bg-white/10 px-4 py-3 text-sm font-semibold text-white ring-1 ring-white/20">
+              Become a host
+            </Link>
           </div>
+        </section>
 
-          <button
-            type="button"
-            className="absolute left-4 top-20 z-10 min-h-[44px] rounded-full bg-white px-3 text-sm font-medium text-slate-700 shadow-soft"
-          >
-            Search this area
-          </button>
-
-          {hosts.map((host) => (
-            <button
-              key={host.id}
-              type="button"
-              aria-label={`View ${host.name}`}
-              className={`absolute z-10 ${host.position}`}
-            >
-              <span className="relative flex h-10 w-10 items-center justify-center rounded-full bg-orange-500 text-xs font-bold text-white shadow-lg shadow-orange-200 ring-4 ring-white/80">
-                {host.name.split(' ')[0][0]}
-              </span>
-            </button>
-          ))}
-
-          <div className="absolute inset-x-0 bottom-0 z-20 rounded-t-[32px] border-t border-slate-200 bg-white pb-6 shadow-[0_-16px_38px_rgba(15,23,42,0.08)]">
-            <div className="mx-auto mt-3 h-1.5 w-12 rounded-full bg-slate-200" />
-
-            <div className="flex items-center justify-between px-4 pt-4">
-              <div>
-                <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Nearby</p>
-                <h2 className="mt-1 text-xl font-bold text-slate-900">Hosts around you</h2>
+        <section className="rounded-[30px] bg-white p-5 shadow-sm ring-1 ring-slate-200">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-lg font-bold text-slate-900">How it works</h2>
+            <Link href="/how-it-works" className="text-sm font-medium text-orange-600">See all</Link>
+          </div>
+          <div className="space-y-3">
+            {steps.map(({ title, description, icon: Icon }) => (
+              <div key={title} className="flex items-start gap-3 rounded-[22px] bg-slate-50 p-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-100 text-orange-600">
+                  <Icon className="h-5 w-5" aria-hidden="true" />
+                </span>
+                <div>
+                  <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
+                  <p className="mt-1 text-sm leading-6 text-slate-600">{description}</p>
+                </div>
               </div>
-              <span className="rounded-full bg-orange-50 px-2.5 py-1 text-xs font-semibold text-orange-600">8 results</span>
-            </div>
-
-            <div className="mt-4 space-y-3 px-4">
-              {hosts.slice(0, 3).map((host) => (
-                <div key={host.id} className="flex items-center gap-3 rounded-[24px] border border-slate-200 bg-slate-50 p-2.5">
-                  <img src={host.image} alt={host.name} className="h-16 w-16 rounded-2xl object-cover" />
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <p className="truncate text-base font-semibold text-slate-900">{host.name}</p>
-                      {host.verified ? <span className="text-[10px] font-bold uppercase text-emerald-700">Verified</span> : null}
-                    </div>
-                    <p className="text-sm text-slate-500">{host.location}</p>
-                    <div className="mt-1 flex items-center justify-between gap-3">
-                      <span className="text-sm font-medium text-slate-600">⭐ {host.rating}</span>
-                      <span className="text-sm font-bold text-slate-900">${host.price}/hr</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="w-full px-4 pb-6 pt-5">
-          <header className="flex items-center justify-between pb-4">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">FriendBook</p>
-              <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900">Nearby friends</h1>
-            </div>
-            <button type="button" className="flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-soft">
-              ☰
-            </button>
-          </header>
-
-          <div className="mb-4 rounded-[28px] border border-slate-200 bg-white p-3 shadow-soft">
-            <div className="flex items-center gap-3">
-              <span className="text-xl text-slate-400">⌕</span>
-              <input
-                aria-label="Search nearby hosts"
-                className="w-full border-0 bg-transparent text-base text-slate-700 outline-none placeholder:text-slate-400"
-                placeholder="Search friends, activities, languages"
-                type="search"
-              />
-            </div>
-          </div>
-
-          <div className="mb-5 overflow-x-auto scrollbar-none">
-            <div className="flex gap-2 whitespace-nowrap pb-1">
-              {categories.map((category, index) => (
-                <button
-                  key={category}
-                  type="button"
-                  className={`inline-flex min-h-[40px] items-center rounded-full px-4 text-sm font-medium transition ${
-                    index === 0 ? 'bg-slate-900 text-white' : 'bg-white text-slate-600 shadow-sm'
-                  }`}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="mb-5 flex items-center justify-between rounded-2xl bg-orange-50 p-3">
-            <div>
-              <p className="text-xs font-medium uppercase tracking-[0.12em] text-orange-700">Today</p>
-              <p className="mt-1 text-sm text-slate-700">23 hosts available within 5 km</p>
-            </div>
-            <button type="button" className="rounded-full bg-orange-500 px-3 py-2 text-xs font-semibold text-white">
-              Filters
-            </button>
-          </div>
-
-          <section className="space-y-4">
-            {hosts.map((host) => (
-              <article key={host.id} className="overflow-hidden rounded-[28px] bg-white shadow-soft ring-1 ring-slate-100">
-                <div className="relative h-60 w-full overflow-hidden">
-                  <img src={host.image} alt={host.name} className="h-full w-full object-cover" />
-                  <div className="absolute inset-x-0 top-0 flex items-center justify-between p-3">
-                    <span className="rounded-full bg-white/85 px-2 py-1 text-xs font-semibold text-slate-700">
-                      {host.category}
-                    </span>
-                    <button type="button" aria-label={`Save ${host.name}`} className="rounded-full bg-white/90 p-2 text-lg">
-                      ♡
-                    </button>
-                  </div>
-                </div>
-
-                <div className="p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h2 className="text-xl font-bold text-slate-900">{host.name}</h2>
-                        {host.verified ? <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-700">Verified</span> : null}
-                      </div>
-                      <p className="mt-1 text-sm text-slate-500">{host.location}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-lg font-bold text-slate-900">${host.price}</p>
-                      <p className="text-xs text-slate-500">/ hr</p>
-                    </div>
-                  </div>
-
-                  <div className="mt-3 flex items-center gap-2 text-sm text-slate-600">
-                    <span>⭐ {host.rating}</span>
-                    <span>•</span>
-                    <span>{host.reviews} reviews</span>
-                  </div>
-
-                  <div className="mt-4 flex items-center justify-between gap-3">
-                    <button type="button" className="min-h-[44px] flex-1 rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700">
-                      Message
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => openBooking(host)}
-                      className="min-h-[44px] flex-1 rounded-full bg-orange-500 px-4 text-sm font-semibold text-white shadow-lg shadow-orange-200"
-                    >
-                      Book now
-                    </button>
-                  </div>
-                </div>
-              </article>
             ))}
-          </section>
+          </div>
+        </section>
 
-          <section className="mt-6 rounded-[28px] bg-slate-900 p-4 text-white shadow-soft">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-medium uppercase tracking-[0.18em] text-orange-200">Host profile</p>
-                <h3 className="mt-1 text-xl font-bold">Maya Lee</h3>
-              </div>
-              <span className="rounded-full bg-emerald-500/20 px-2 py-1 text-xs font-semibold text-emerald-300">Available today</span>
-            </div>
+        <section className="rounded-[30px] bg-white p-5 shadow-sm ring-1 ring-slate-200">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-lg font-bold text-slate-900">Featured categories</h2>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {categories.map((category) => (
+              <span key={category} className="rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700">
+                {category}
+              </span>
+            ))}
+          </div>
+        </section>
 
-            <div className="mt-4 flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-              {[1, 2, 3].map((item) => (
-                <div key={item} className="h-20 w-20 overflow-hidden rounded-2xl bg-slate-700">
-                  <img
-                    src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=600&q=80"
-                    alt="Maya profile"
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-              ))}
-            </div>
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-bold text-slate-900">Popular nearby</h2>
+            <Link href="/explore" className="text-sm font-medium text-orange-600">View all</Link>
+          </div>
 
-            <div className="mt-4 flex gap-2 text-sm">
-              <button type="button" className="rounded-full bg-white/10 px-3 py-2">
-                About
-              </button>
-              <button type="button" className="rounded-full bg-white/10 px-3 py-2">
-                Availability
-              </button>
-              <button type="button" className="rounded-full bg-white/10 px-3 py-2">
-                Reviews
-              </button>
-            </div>
-
-            <p className="mt-4 text-sm leading-6 text-slate-200">
-              I love helping people discover the city through local food, cafés, and scenic walks.
-              Great for conversation practice, weekend plans, and easygoing social energy.
-            </p>
-
-            <div className="mt-4 space-y-3">
-              {reviews.map((review) => (
-                <div key={review.name} className="rounded-2xl bg-white/5 p-3">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="font-semibold">{review.name}</span>
-                    <span>{'⭐'.repeat(review.rating)}</span>
+          {sampleHosts.map(({ name, role, rating, verified }) => (
+            <article key={name} className="rounded-[30px] bg-white p-4 shadow-sm ring-1 ring-slate-200">
+              <div className="flex items-center gap-3">
+                <Avatar name={name} />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <h3 className="truncate text-base font-semibold text-slate-900">{name}</h3>
+                    {verified ? <StatusChip label="Verified" tone="success" /> : null}
                   </div>
-                  <p className="mt-2 text-sm text-slate-200">{review.text}</p>
+                  <p className="text-sm text-slate-500">{role}</p>
                 </div>
-              ))}
-            </div>
+              </div>
 
-            <div className="mt-5 flex gap-3">
-              <button type="button" className="min-h-[44px] flex-1 rounded-full bg-white font-semibold text-slate-900">
-                Save
-              </button>
-              <button
-                type="button"
-                onClick={() => openBooking(hosts[0])}
-                className="min-h-[44px] flex-1 rounded-full bg-orange-500 font-semibold text-white"
-              >
-                Book now
-              </button>
+              <div className="mt-4 flex items-center justify-between gap-3">
+                <RatingStars value={rating} count={18} />
+                <span className="text-sm font-bold text-slate-900">$28/hr</span>
+              </div>
+            </article>
+          ))}
+        </section>
+
+        <section className="rounded-[30px] bg-slate-900 p-5 text-white shadow-lg shadow-slate-200">
+          <div className="flex items-center gap-2 text-orange-300">
+            <Sparkles className="h-5 w-5" aria-hidden="true" />
+            <p className="text-xs font-semibold uppercase tracking-[0.2em]">Why people use it</p>
+          </div>
+          <ul className="mt-4 space-y-3 text-sm text-slate-200">
+            {['No awkward guessing', 'Fast local discovery', 'Safety-first meetups'].map((item) => (
+              <li key={item} className="flex items-center gap-3">
+                <CheckCircle2 className="h-4 w-4 text-emerald-400" aria-hidden="true" />
+                {item}
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-bold text-slate-900">FAQ</h2>
+            <Link href="/help" className="text-sm font-medium text-orange-600">More</Link>
+          </div>
+          {faqs.map(({ question, answer }) => (
+            <div key={question} className="rounded-[24px] bg-white p-4 shadow-sm ring-1 ring-slate-200">
+              <h3 className="text-sm font-semibold text-slate-900">{question}</h3>
+              <p className="mt-2 text-sm leading-6 text-slate-600">{answer}</p>
             </div>
-          </section>
-        </div>
-      )}
-      </MobileShell>
-    </>
+          ))}
+        </section>
+
+        <footer className="rounded-[30px] bg-white p-5 shadow-sm ring-1 ring-slate-200">
+          <div className="flex items-center justify-between text-sm text-slate-600">
+            <Link href="/how-it-works">How it works</Link>
+            <Link href="/safety">Safety</Link>
+            <Link href="/terms">Terms</Link>
+          </div>
+          <div className="mt-4 flex items-center justify-between text-sm text-slate-600">
+            <Link href="/privacy">Privacy</Link>
+            <Link href="/contact">Contact</Link>
+            <Link href="/install">Install app</Link>
+          </div>
+        </footer>
+      </main>
+    </div>
   );
 }
