@@ -1,8 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { ArrowRight, Check, ChevronLeft, MapPin, ShieldCheck, Sparkles, UserRound } from 'lucide-react';
 import { PageHeader } from '@/components/ui/page-header';
+import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+import { saveProfileFromOnboarding } from '@/lib/supabase/auth';
 
 const slides = [
   {
@@ -23,14 +26,46 @@ const slides = [
 ];
 
 export default function OnboardingPage() {
+  const router = useRouter();
   const [step, setStep] = useState(0);
+  const [fullName, setFullName] = useState('Jordan Miles');
+  const [bio, setBio] = useState('I love casual city walks, coffee chats, and easygoing conversation.');
   const [city, setCity] = useState('San Francisco');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const supabase = getSupabaseBrowserClient();
+    supabase.auth.getUser().then(({ data, error: userError }) => {
+      if (userError || !data.user) {
+        router.replace('/login');
+      }
+    });
+  }, [router]);
 
   const currentSlide = slides[step] ?? slides[0];
   const isLastSlide = step === slides.length - 1;
 
   const nextStep = () => setStep((prev) => Math.min(prev + 1, slides.length));
   const previousStep = () => setStep((prev) => Math.max(prev - 1, 0));
+
+  const handleFinish = async () => {
+    try {
+      setIsSubmitting(true);
+      setError(null);
+      await saveProfileFromOnboarding({
+        full_name: fullName.trim() || 'FriendBook user',
+        city: city.trim() || 'San Francisco',
+        bio: bio.trim() || null,
+        username: fullName.trim().toLowerCase().replace(/\s+/g, '.'),
+      });
+      router.push('/explore');
+    } catch (submitError) {
+      setError(submitError instanceof Error ? submitError.message : 'Unable to save your profile.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-dvh bg-[#fffaf5] pb-10">
@@ -68,12 +103,22 @@ export default function OnboardingPage() {
           <div className="space-y-4 rounded-[30px] bg-white p-5 shadow-sm ring-1 ring-slate-200">
             <label className="block text-left">
               <span className="mb-2 block text-sm font-semibold text-slate-700">What should we call you?</span>
-              <input type="text" defaultValue="Jordan Miles" className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 text-base text-slate-700 outline-none" />
+              <input
+                type="text"
+                value={fullName}
+                onChange={(event) => setFullName(event.target.value)}
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 text-base text-slate-700 outline-none"
+              />
             </label>
 
             <label className="block text-left">
               <span className="mb-2 block text-sm font-semibold text-slate-700">Bio</span>
-              <textarea rows={4} defaultValue="I love casual city walks, coffee chats, and easygoing conversation." className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 text-base text-slate-700 outline-none" />
+              <textarea
+                rows={4}
+                value={bio}
+                onChange={(event) => setBio(event.target.value)}
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 text-base text-slate-700 outline-none"
+              />
             </label>
 
             <label className="block text-left">
@@ -90,8 +135,12 @@ export default function OnboardingPage() {
             </label>
 
             <div className="rounded-[24px] border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
-              You must be 18+ to use FriendBook. This is a placeholder check until the full auth onboarding flow is connected to the real profile model.
+              You must be 18+ to use FriendBook. You are confirming this as part of your onboarding.
             </div>
+
+            {error ? (
+              <div className="rounded-2xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div>
+            ) : null}
           </div>
         ) : null}
 
@@ -108,12 +157,13 @@ export default function OnboardingPage() {
 
           <button
             type="button"
-            onClick={nextStep}
-            className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-orange-500 px-4 py-3 text-sm font-semibold text-white shadow-md shadow-orange-200"
+            onClick={isLastSlide ? handleFinish : nextStep}
+            disabled={isSubmitting}
+            className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-orange-500 px-4 py-3 text-sm font-semibold text-white shadow-md shadow-orange-200 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isLastSlide ? (
               <>
-                Finish <Check className="h-4 w-4" aria-hidden="true" />
+                {isSubmitting ? 'Saving...' : 'Finish'} <Check className="h-4 w-4" aria-hidden="true" />
               </>
             ) : (
               <>

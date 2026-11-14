@@ -1,12 +1,36 @@
+'use client';
+
 import { MapPin, Search } from 'lucide-react';
+import { useState } from 'react';
+import { BookingFlow, type BookingHost } from '@/components/booking-flow';
 
 const hosts = [
-  { id: 1, name: 'Maya', position: 'left-[18%] top-[22%]' },
-  { id: 2, name: 'Daniel', position: 'left-[58%] top-[30%]' },
-  { id: 3, name: 'Noor', position: 'left-[38%] top-[56%]' },
+  { id: 1, name: 'Maya', position: 'left-[18%] top-[22%]', fullName: 'Maya Lee', distance: '1.2 km away', price: 28, category: 'Conversation', verified: true },
+  { id: 2, name: 'Daniel', position: 'left-[58%] top-[30%]', fullName: 'Daniel Cruz', distance: '2.4 km away', price: 35, category: 'Football', verified: true },
+  { id: 3, name: 'Noor', position: 'left-[38%] top-[56%]', fullName: 'Noor Hassan', distance: '0.8 km away', price: 24, category: 'Language', verified: true },
 ];
 
 export default function MapPage() {
+  const [locationLabel, setLocationLabel] = useState('San Francisco • 3.1 km');
+  const [selectedHost, setSelectedHost] = useState<BookingHost | null>(null);
+
+  const handleUseMyLocation = () => {
+    if (!navigator.geolocation) {
+      setLocationLabel('Location unavailable • 3.1 km');
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      () => {
+        setLocationLabel('Near you • 1.8 km');
+      },
+      () => {
+        setLocationLabel('Location unavailable • 3.1 km');
+      },
+      { enableHighAccuracy: true, timeout: 8000 },
+    );
+  };
+
   return (
     <div className="relative h-[calc(100dvh-118px)] overflow-hidden bg-[#eaf5f3]">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.9),rgba(255,255,255,0)_30%),linear-gradient(135deg,#dff3ed_0%,#eaf5f3_30%,#dfeef8_100%)]" />
@@ -24,9 +48,13 @@ export default function MapPage() {
       <div className="absolute left-4 right-4 top-4 z-10 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2 rounded-full bg-white/85 px-3 py-2 text-xs font-semibold text-slate-700 shadow-soft backdrop-blur">
           <MapPin className="h-3.5 w-3.5 text-orange-500" aria-hidden="true" />
-          <span>San Francisco • 3.1 km</span>
+          <span>{locationLabel}</span>
         </div>
-        <button type="button" className="min-h-[44px] rounded-full bg-slate-900 px-3 text-xs font-semibold text-white shadow-soft">
+        <button
+          type="button"
+          onClick={handleUseMyLocation}
+          className="min-h-[44px] rounded-full bg-slate-900 px-3 text-xs font-semibold text-white shadow-soft"
+        >
           Use my location
         </button>
       </div>
@@ -40,7 +68,13 @@ export default function MapPage() {
       </button>
 
       {hosts.map((host) => (
-        <button key={host.id} type="button" aria-label={`View ${host.name}`} className={`absolute z-10 ${host.position}`}>
+        <button
+          key={host.id}
+          type="button"
+          aria-label={`View ${host.fullName}`}
+          onClick={() => setSelectedHost({ id: host.id, name: host.fullName, price: host.price, category: host.category, verified: host.verified })}
+          className={`absolute z-10 ${host.position}`}
+        >
           <span className="relative flex h-10 w-10 items-center justify-center rounded-full bg-orange-500 text-xs font-bold text-white shadow-lg shadow-orange-200 ring-4 ring-white/80">
             {host.name[0]}
           </span>
@@ -54,31 +88,42 @@ export default function MapPage() {
             <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Nearby</p>
             <h2 className="mt-1 text-xl font-bold text-slate-900">Hosts around you</h2>
           </div>
-          <span className="rounded-full bg-orange-50 px-2.5 py-1 text-xs font-semibold text-orange-600">8 results</span>
+          <span className="rounded-full bg-orange-50 px-2.5 py-1 text-xs font-semibold text-orange-600">{hosts.length} results</span>
         </div>
 
         <div className="mt-4 space-y-3 px-4">
-          {[
-            { name: 'Maya Lee', distance: '1.2 km away', price: '$28/hr' },
-            { name: 'Daniel Cruz', distance: '2.4 km away', price: '$35/hr' },
-            { name: 'Noor Hassan', distance: '0.8 km away', price: '$24/hr' },
-          ].map((host) => (
-            <div key={host.name} className="flex items-center gap-3 rounded-[24px] border border-slate-200 bg-slate-50 p-2.5">
+          {hosts.map((host) => (
+            <div key={host.fullName} className="flex items-center gap-3 rounded-[24px] border border-slate-200 bg-slate-50 p-2.5">
               <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-200 via-orange-100 to-white text-lg font-bold text-orange-700">
-                {host.name.split(' ')[0][0]}
+                {host.name[0]}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-base font-semibold text-slate-900">{host.name}</p>
+                <p className="truncate text-base font-semibold text-slate-900">{host.fullName}</p>
                 <p className="text-sm text-slate-500">{host.distance}</p>
                 <div className="mt-1 flex items-center justify-between gap-3">
                   <span className="text-sm font-medium text-slate-600">⭐ 4.9</span>
-                  <span className="text-sm font-bold text-slate-900">{host.price}</span>
+                  <span className="text-sm font-bold text-slate-900">${host.price}/hr</span>
                 </div>
               </div>
+              <button
+                type="button"
+                onClick={() => setSelectedHost({ id: host.id, name: host.fullName, price: host.price, category: host.category, verified: host.verified })}
+                className="rounded-full bg-orange-500 px-3 py-2 text-xs font-semibold text-white shadow-md shadow-orange-200"
+              >
+                Book now
+              </button>
             </div>
           ))}
         </div>
       </div>
+
+      {selectedHost ? (
+        <BookingFlow
+          host={selectedHost}
+          isOpen={Boolean(selectedHost)}
+          onClose={() => setSelectedHost(null)}
+        />
+      ) : null}
     </div>
   );
 }

@@ -42,18 +42,58 @@ export function BookingFlow({
   const [selectedDuration, setSelectedDuration] = useState(2);
   const [selectedPlace, setSelectedPlace] = useState(placeOptions[0].name);
   const [paymentMethod, setPaymentMethod] = useState('Card');
+  const [isPaying, setIsPaying] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
 
   const subtotal = host.price * selectedDuration;
   const serviceFee = Math.round(subtotal * 0.15 * 100) / 100;
   const total = subtotal + serviceFee;
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep((value) => value + 1);
       return;
     }
 
-    onClose();
+    setIsPaying(true);
+    setPaymentError(null);
+
+    try {
+      const bookingId = `booking_${host.id}_${Date.now()}`;
+
+      const response = await fetch('/api/payments/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: Number(total.toFixed(2)),
+          hostName: host.name,
+          bookingId,
+          date: selectedDate,
+          time: selectedTime,
+          duration: selectedDuration,
+          place: selectedPlace,
+        }),
+      });
+
+      const payload = await response.json();
+
+      if (!response.ok) {
+        throw new Error(payload.error ?? 'Unable to start payment.');
+      }
+
+      if (payload.url) {
+        window.location.href = payload.url;
+        return;
+      }
+
+      onClose();
+    } catch (error) {
+      setPaymentError(error instanceof Error ? error.message : 'Unable to start payment.');
+    } finally {
+      setIsPaying(false);
+    }
   };
 
   const handleBack = () => {
@@ -255,6 +295,12 @@ export function BookingFlow({
                     ))}
                   </div>
 
+                  {paymentError ? (
+                    <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                      {paymentError}
+                    </div>
+                  ) : null}
+
                   <p className="mt-4 text-center text-[11px] text-slate-500">
                     Stripe Connect checkout • Secure payment • Instant booking confirmation
                   </p>
@@ -280,11 +326,12 @@ export function BookingFlow({
                 <button
                   type="button"
                   onClick={handleNext}
-                  className="min-h-[44px] flex-1 rounded-full bg-orange-500 px-3 text-sm font-semibold text-white shadow-lg shadow-orange-200"
+                  disabled={isPaying}
+                  className="min-h-[44px] flex-1 rounded-full bg-orange-500 px-3 text-sm font-semibold text-white shadow-lg shadow-orange-200 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   <span className="inline-flex items-center justify-center gap-2">
-                    {currentStep === 4 ? `Pay $${total.toFixed(2)}` : 'Continue'}
-                    {currentStep < 4 && <ChevronRight className="h-4 w-4" aria-hidden="true" />}
+                    {currentStep === 4 ? (isPaying ? 'Preparing payment...' : `Pay $${total.toFixed(2)}`) : 'Continue'}
+                    {currentStep < 4 && !isPaying && <ChevronRight className="h-4 w-4" aria-hidden="true" />}
                   </span>
                 </button>
               </div>

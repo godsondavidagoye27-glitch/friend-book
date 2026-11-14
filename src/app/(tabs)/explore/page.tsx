@@ -1,4 +1,4 @@
-import { BadgeCheck, Filter, Heart, Search, Sparkles, Star } from 'lucide-react';
+import { BadgeCheck, Filter, Heart, Menu, Search, Sparkles, Star } from 'lucide-react';
 
 const categories = ['Yoga', 'Conversation', 'Football', 'Walks', 'Language', 'Gym'];
 
@@ -17,7 +17,7 @@ export default function ExplorePage() {
           <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900">Nearby friends</h1>
         </div>
         <button type="button" aria-label="Open menu" className="flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-soft">
-          <span className="text-xl text-slate-700">☰</span>
+          <Menu className="h-5 w-5 text-slate-700" aria-hidden="true" />
         </button>
       </header>
 
