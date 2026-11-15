@@ -1,6 +1,6 @@
 # Phase 1 build prompt archive
 
-This file preserves the original build guidance and the current hardening checkpoint for FriendBook.
+This file preserves the original build guidance and the current hardening checkpoint for Amiora.
 
 ## Original app foundation task
 - Keep the warm orange visual identity and mobile-first layout.

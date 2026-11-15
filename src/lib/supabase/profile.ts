@@ -1,6 +1,6 @@
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 
-export type FriendBookProfile = {
+export type AmioraProfile = {
   id: string;
   email: string | null;
   full_name: string | null;
@@ -31,7 +31,7 @@ export type HostProfile = {
   updated_at?: string;
 };
 
-export async function getCurrentProfile(): Promise<FriendBookProfile | null> {
+export async function getCurrentProfile(): Promise<AmioraProfile | null> {
   const supabase = getSupabaseBrowserClient();
   const {
     data: { user },
@@ -48,7 +48,7 @@ export async function getCurrentProfile(): Promise<FriendBookProfile | null> {
     throw error;
   }
 
-  return data as FriendBookProfile | null;
+  return data as AmioraProfile | null;
 }
 
 export async function getCurrentHostProfile(): Promise<HostProfile | null> {
@@ -101,7 +101,6 @@ export async function saveHostProfile(payload: {
     latitude: payload.latitude ?? null,
     longitude: payload.longitude ?? null,
     is_hidden: payload.is_hidden ?? false,
-    updated_at: new Date().toISOString(),
   };
 
   const { data: existingHost } = await supabase.from('host_profiles').select('id').eq('profile_id', user.id).maybeSingle();

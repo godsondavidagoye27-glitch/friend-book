@@ -14,7 +14,7 @@ insert into profiles (id, email, full_name, username, city, bio, role, accepted_
   ('00000000-0000-4000-8000-000000000004', 'sara@example.com', 'Sara Nguyen', 'sara', 'Austin', 'Walking buddy and local culture enthusiast.', 'host', now(), false),
   ('00000000-0000-4000-8000-000000000005', 'leo@example.com', 'Leo Martin', 'leo', 'Seattle', 'I host casual city guides and conversation meetups.', 'host', now(), false),
   ('00000000-0000-4000-8000-000000000006', 'jordan@example.com', 'Jordan Miles', 'jordan', 'San Francisco', 'Looking for friendly plans and easygoing conversation.', 'user', now(), false),
-  ('00000000-0000-4000-8000-000000000007', 'admin@example.com', 'FriendBook Admin', 'friendbook_admin', 'Remote', 'Platform admin support.', 'admin', now(), false)
+  ('00000000-0000-4000-8000-000000000007', 'admin@example.com', 'Amiora Admin', 'amiora_admin', 'Remote', 'Platform admin support.', 'admin', now(), false)
 on conflict do nothing;
 
 insert into host_profiles (id, profile_id, headline, bio, price_per_hour, verified, is_hidden, city, latitude, longitude, public_area) values
@@ -45,3 +45,5 @@ insert into availability_slots (host_id, starts_at, ends_at, is_blocked) values
   ('22222222-2222-4222-8222-222222222224', now() + interval '4 days', now() + interval '4 days 2 hours', false),
   ('22222222-2222-4222-8222-222222222225', now() + interval '5 days', now() + interval '5 days 3 hours', false)
 on conflict do nothing;
+
+

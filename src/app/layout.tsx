@@ -9,14 +9,14 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'FriendBook',
+  title: 'Amiora',
   description: 'Mobile-first marketplace for booking nearby social time.',
-  applicationName: 'FriendBook',
+  applicationName: 'Amiora',
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'FriendBook',
+    title: 'Amiora',
   },
   icons: {
     icon: [

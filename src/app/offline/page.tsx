@@ -14,7 +14,7 @@ export default function OfflinePage() {
         </p>
         <h1 className="mt-2 text-2xl font-bold text-slate-900">You’re offline</h1>
         <p className="mt-3 text-sm leading-6 text-slate-600">
-          FriendBook is caching the app shell so you can still revisit the home screen, but live host updates need a connection.
+          Amiora is caching the app shell so you can still revisit the home screen, but live host updates need a connection.
         </p>
 
         <Link

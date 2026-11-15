@@ -1,4 +1,4 @@
-const CACHE_NAME = 'friendbook-shell-v1';
+const CACHE_NAME = 'amiora-shell-v1';
 const APP_SHELL = ['/', '/offline', '/manifest.webmanifest'];
 
 self.addEventListener('install', (event) => {

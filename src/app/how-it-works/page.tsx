@@ -30,7 +30,7 @@ export default function HowItWorksPage() {
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-orange-100">For everyone</p>
           <h2 className="mt-3 text-2xl font-bold">Fast, friendly, and low-pressure.</h2>
           <p className="mt-2 text-sm leading-6 text-orange-50">
-            FriendBook matches people who want real social plans without the friction of a dating app or an overly formal booking tool.
+            Amiora matches people who want real social plans without the friction of a dating app or an overly formal booking tool.
           </p>
         </section>
 

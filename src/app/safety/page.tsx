@@ -58,7 +58,7 @@ export default function SafetyPage() {
             <div>
               <h3 className="text-base font-semibold text-amber-900">What is not allowed</h3>
               <p className="mt-2 text-sm text-amber-800">
-                FriendBook is for social time only. No sexual services, no illegal activity, and no coercive or unsafe behavior.
+                Amiora is for social time only. No sexual services, no illegal activity, and no coercive or unsafe behavior.
               </p>
             </div>
           </div>

@@ -17,7 +17,7 @@ export default function CommunityGuidelinesPage() {
       <main className="mx-auto flex w-full max-w-[430px] flex-col gap-5 px-4 py-5">
         <section className="rounded-[30px] bg-gradient-to-br from-slate-900 to-slate-800 p-5 text-white shadow-lg shadow-slate-200">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-300">Our standards</p>
-          <h2 className="mt-3 text-2xl font-bold">Keep FriendBook safe and welcoming.</h2>
+          <h2 className="mt-3 text-2xl font-bold">Keep Amiora safe and welcoming.</h2>
         </section>
 
         <div className="space-y-3">

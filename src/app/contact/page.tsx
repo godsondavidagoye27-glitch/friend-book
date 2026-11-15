@@ -21,8 +21,8 @@ export default function ContactPage() {
         <section className="rounded-[30px] bg-slate-900 p-5 text-white shadow-lg shadow-slate-200">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-300">Need help?</p>
           <h2 className="mt-2 text-2xl font-bold">Send us a note.</h2>
-          <a href="mailto:support@friendbook.example" className="mt-3 inline-block text-sm text-orange-200">
-            support@friendbook.example
+          <a href="mailto:support@amiora.example" className="mt-3 inline-block text-sm text-orange-200">
+            support@amiora.example
           </a>
         </section>
 

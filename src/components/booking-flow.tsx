@@ -2,17 +2,18 @@
 
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { createBookingRequest } from '@/lib/supabase/bookings';
 
 export type BookingHost = {
-  id: number;
+  id: string | number;
   name: string;
   price: number;
   category: string;
   verified?: boolean;
 };
 
-const steps = ['Date', 'Time', 'Length', 'Place', 'Pay'];
+const steps = ['Date', 'Time', 'Length', 'Place', 'Review'];
 const dateOptions = ['Today', 'Thu 14', 'Fri 15', 'Sat 16'];
 const timeOptions = ['5:30 PM', '6:00 PM', '6:30 PM', '7:00 PM'];
 const durationOptions = [1, 2, 3, 4];
@@ -21,11 +22,37 @@ const placeOptions = [
   { name: 'Riverside Bench', detail: 'Public park • 5 min walk' },
   { name: 'City Library Atrium', detail: 'Indoor seating • safe and central' },
 ];
-const paymentMethods = [
-  { label: 'Card', note: 'Visa •••• 4242' },
-  { label: 'Apple Pay', note: 'Instant' },
-  { label: 'Google Pay', note: 'Instant' },
-];
+
+function buildStartsAt(selectedDate: string, selectedTime: string) {
+  const now = new Date();
+  const targetDay = selectedDate === 'Today' ? now : new Date();
+
+  if (selectedDate === 'Today') {
+    targetDay.setHours(0, 0, 0, 0);
+  } else {
+    const dayNumber = Number.parseInt(selectedDate.split(' ')[1] ?? '0', 10);
+    if (!Number.isNaN(dayNumber)) {
+      targetDay.setDate(now.getDate() + Math.max(1, dayNumber - now.getDate() + 1));
+    }
+    targetDay.setHours(0, 0, 0, 0);
+  }
+
+  const [time, meridiem] = selectedTime.split(' ');
+  const [hourString, minuteString] = time.split(':');
+  let hour = Number.parseInt(hourString ?? '0', 10);
+  const minute = Number.parseInt(minuteString ?? '0', 10);
+
+  if (meridiem === 'PM' && hour < 12) {
+    hour += 12;
+  }
+
+  if (meridiem === 'AM' && hour === 12) {
+    hour = 0;
+  }
+
+  targetDay.setHours(hour, minute, 0, 0);
+  return targetDay.toISOString();
+}
 
 export function BookingFlow({
   host,
@@ -41,13 +68,21 @@ export function BookingFlow({
   const [selectedTime, setSelectedTime] = useState(timeOptions[2]);
   const [selectedDuration, setSelectedDuration] = useState(2);
   const [selectedPlace, setSelectedPlace] = useState(placeOptions[0].name);
-  const [paymentMethod, setPaymentMethod] = useState('Card');
-  const [isPaying, setIsPaying] = useState(false);
-  const [paymentError, setPaymentError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const subtotal = host.price * selectedDuration;
-  const serviceFee = Math.round(subtotal * 0.15 * 100) / 100;
-  const total = subtotal + serviceFee;
+  const bookingHostId = String(host.id);
+  const isDbBookingReady = bookingHostId.includes('-');
+
+  const requestSummary = useMemo(
+    () => ({
+      startsAt: buildStartsAt(selectedDate, selectedTime),
+      durationHours: selectedDuration,
+      placeName: selectedPlace,
+    }),
+    [selectedDate, selectedDuration, selectedPlace, selectedTime],
+  );
 
   const handleNext = async () => {
     if (currentStep < steps.length - 1) {
@@ -55,44 +90,25 @@ export function BookingFlow({
       return;
     }
 
-    setIsPaying(true);
-    setPaymentError(null);
+    if (!isDbBookingReady) {
+      setError('This host is not ready to receive booking requests yet.');
+      return;
+    }
 
     try {
-      const bookingId = `booking_${host.id}_${Date.now()}`;
-
-      const response = await fetch('/api/payments/checkout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          amount: Number(total.toFixed(2)),
-          hostName: host.name,
-          bookingId,
-          date: selectedDate,
-          time: selectedTime,
-          duration: selectedDuration,
-          place: selectedPlace,
-        }),
+      setIsSubmitting(true);
+      setError(null);
+      await createBookingRequest({
+        hostId: host.id,
+        startsAt: requestSummary.startsAt,
+        durationHours: requestSummary.durationHours,
+        placeName: requestSummary.placeName,
       });
-
-      const payload = await response.json();
-
-      if (!response.ok) {
-        throw new Error(payload.error ?? 'Unable to start payment.');
-      }
-
-      if (payload.url) {
-        window.location.href = payload.url;
-        return;
-      }
-
       onClose();
-    } catch (error) {
-      setPaymentError(error instanceof Error ? error.message : 'Unable to start payment.');
+    } catch (submitError) {
+      setError(submitError instanceof Error ? submitError.message : 'Unable to send the booking request.');
     } finally {
-      setIsPaying(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -249,7 +265,7 @@ export function BookingFlow({
 
               {currentStep === 4 && (
                 <div>
-                  <h4 className="text-lg font-bold text-slate-900">Review and pay</h4>
+                  <h4 className="text-lg font-bold text-slate-900">Review</h4>
 
                   <div className="mt-4 rounded-2xl bg-slate-50 p-3">
                     <div className="flex items-center justify-between text-sm text-slate-600">
@@ -260,50 +276,19 @@ export function BookingFlow({
                       <span>{selectedDuration} hour{selectedDuration > 1 ? 's' : ''}</span>
                       <span>{selectedPlace}</span>
                     </div>
-                  </div>
-
-                  <div className="mt-4 space-y-3">
-                    <div className="flex items-center justify-between text-sm text-slate-600">
-                      <span>Host rate</span>
+                    <div className="mt-2 flex items-center justify-between text-sm text-slate-600">
+                      <span>Estimated total</span>
                       <span>${subtotal.toFixed(2)}</span>
                     </div>
-                    <div className="flex items-center justify-between text-sm text-slate-600">
-                      <span>Platform fee (15%)</span>
-                      <span>${serviceFee.toFixed(2)}</span>
-                    </div>
-                    <div className="flex items-center justify-between border-t border-slate-200 pt-3 text-base font-bold text-slate-900">
-                      <span>Total</span>
-                      <span>${total.toFixed(2)}</span>
-                    </div>
                   </div>
 
-                  <div className="mt-5 space-y-3">
-                    {paymentMethods.map((method) => (
-                      <button
-                        key={method.label}
-                        type="button"
-                        onClick={() => setPaymentMethod(method.label)}
-                        className={`flex w-full items-center justify-between rounded-2xl border px-3 py-3 text-left ${
-                          paymentMethod === method.label
-                            ? 'border-orange-500 bg-orange-50'
-                            : 'border-slate-200 bg-white'
-                        }`}
-                      >
-                        <span className="font-semibold text-slate-800">{method.label}</span>
-                        <span className="text-sm text-slate-500">{method.note}</span>
-                      </button>
-                    ))}
-                  </div>
-
-                  {paymentError ? (
-                    <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-                      {paymentError}
-                    </div>
-                  ) : null}
-
-                  <p className="mt-4 text-center text-[11px] text-slate-500">
-                    Stripe Connect checkout • Secure payment • Instant booking confirmation
-                  </p>
+                  {error ? (
+                    <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div>
+                  ) : (
+                    <p className="mt-5 rounded-2xl bg-orange-50 p-3 text-sm font-medium text-orange-700">
+                      Request sent. Payment is added in the next release.
+                    </p>
+                  )}
                 </div>
               )}
             </div>
@@ -314,7 +299,8 @@ export function BookingFlow({
                   <button
                     type="button"
                     onClick={handleBack}
-                    className="min-h-[44px] flex-1 rounded-full border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700"
+                    disabled={isSubmitting}
+                    className="min-h-[44px] flex-1 rounded-full border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 disabled:opacity-60"
                   >
                     <span className="inline-flex items-center gap-2">
                       <ChevronLeft className="h-4 w-4" aria-hidden="true" />
@@ -326,12 +312,12 @@ export function BookingFlow({
                 <button
                   type="button"
                   onClick={handleNext}
-                  disabled={isPaying}
+                  disabled={isSubmitting}
                   className="min-h-[44px] flex-1 rounded-full bg-orange-500 px-3 text-sm font-semibold text-white shadow-lg shadow-orange-200 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   <span className="inline-flex items-center justify-center gap-2">
-                    {currentStep === 4 ? (isPaying ? 'Preparing payment...' : `Pay $${total.toFixed(2)}`) : 'Continue'}
-                    {currentStep < 4 && !isPaying && <ChevronRight className="h-4 w-4" aria-hidden="true" />}
+                    {isSubmitting ? 'Sending...' : currentStep === 4 ? 'Send request' : 'Continue'}
+                    {currentStep < 4 && !isSubmitting && <ChevronRight className="h-4 w-4" aria-hidden="true" />}
                   </span>
                 </button>
               </div>

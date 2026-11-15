@@ -1,7 +1,7 @@
-# FriendBook product spec
+# Amiora product spec
 
 ## Product overview
-FriendBook is a mobile-first marketplace for booking social time with nearby people. The app helps users discover nearby hosts, request a meetup, and build trust through profile verification, public-meeting rules, and community safety features.
+Amiora is a mobile-first marketplace for booking social time with nearby people. The app helps users discover nearby hosts, request a meetup, and build trust through profile verification, public-meeting rules, and community safety features.
 
 ## Core product goals
 - Keep the app frictionless on a phone: 360px to 430px support, one-handed interaction, safe-area aware layout, and touch targets that are at least 44 x 44 px.

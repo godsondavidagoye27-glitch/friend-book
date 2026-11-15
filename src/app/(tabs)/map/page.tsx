@@ -1,10 +1,11 @@
 'use client';
 
 import { MapPin, Search } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { BookingFlow, type BookingHost } from '@/components/booking-flow';
+import { getPublicHosts, type PublicHost } from '@/lib/supabase/hosts';
 
-const hosts = [
+const fallbackHosts = [
   { id: 1, name: 'Maya', position: 'left-[18%] top-[22%]', fullName: 'Maya Lee', distance: '1.2 km away', price: 28, category: 'Conversation', verified: true },
   { id: 2, name: 'Daniel', position: 'left-[58%] top-[30%]', fullName: 'Daniel Cruz', distance: '2.4 km away', price: 35, category: 'Football', verified: true },
   { id: 3, name: 'Noor', position: 'left-[38%] top-[56%]', fullName: 'Noor Hassan', distance: '0.8 km away', price: 24, category: 'Language', verified: true },
@@ -13,6 +14,54 @@ const hosts = [
 export default function MapPage() {
   const [locationLabel, setLocationLabel] = useState('San Francisco • 3.1 km');
   const [selectedHost, setSelectedHost] = useState<BookingHost | null>(null);
+  const [hosts, setHosts] = useState<PublicHost[]>([]);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadHosts() {
+      try {
+        const data = await getPublicHosts();
+        if (active) {
+          setHosts(data);
+        }
+      } catch (error) {
+        console.error('Failed to load hosts for map', error);
+        if (active) {
+          setHosts([]);
+        }
+      }
+    }
+
+    void loadHosts();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const visibleHosts = useMemo(() => {
+    if (hosts.length > 0) {
+      return hosts.map((host, index) => ({
+        id: Number.parseInt(host.id.replace(/\D/g, '').slice(-6), 10) || index + 1,
+        name: host.full_name?.split(' ')[0] ?? 'Host',
+        position: [
+          'left-[18%] top-[22%]',
+          'left-[58%] top-[30%]',
+          'left-[38%] top-[56%]',
+          'left-[26%] top-[44%]',
+          'right-[24%] top-[32%]',
+        ][index % 5],
+        fullName: host.full_name || 'Amiora host',
+        distance: host.city ? `${host.city} • local` : 'Nearby',
+        price: host.price_per_hour,
+        category: host.headline || 'Nearby host',
+        verified: host.verified,
+      }));
+    }
+
+    return fallbackHosts;
+  }, [hosts]);
 
   const handleUseMyLocation = () => {
     if (!navigator.geolocation) {
@@ -67,7 +116,7 @@ export default function MapPage() {
         Search this area
       </button>
 
-      {hosts.map((host) => (
+      {visibleHosts.map((host) => (
         <button
           key={host.id}
           type="button"
@@ -88,11 +137,11 @@ export default function MapPage() {
             <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Nearby</p>
             <h2 className="mt-1 text-xl font-bold text-slate-900">Hosts around you</h2>
           </div>
-          <span className="rounded-full bg-orange-50 px-2.5 py-1 text-xs font-semibold text-orange-600">{hosts.length} results</span>
+          <span className="rounded-full bg-orange-50 px-2.5 py-1 text-xs font-semibold text-orange-600">{visibleHosts.length} results</span>
         </div>
 
         <div className="mt-4 space-y-3 px-4">
-          {hosts.map((host) => (
+          {visibleHosts.map((host) => (
             <div key={host.fullName} className="flex items-center gap-3 rounded-[24px] border border-slate-200 bg-slate-50 p-2.5">
               <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-200 via-orange-100 to-white text-lg font-bold text-orange-700">
                 {host.name[0]}

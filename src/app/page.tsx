@@ -31,7 +31,7 @@ const sampleHosts = [
 ];
 
 const faqs = [
-  { question: 'Is this a dating app?', answer: 'No. FriendBook is for social plans, shared activities, and real-life meetups.' },
+  { question: 'Is this a dating app?', answer: 'No. Amiora is for social plans, shared activities, and real-life meetups.' },
   { question: 'Do I need to verify my profile?', answer: 'Hosts are verified and public safety checks are built into the app experience.' },
   { question: 'Can I use it as a guest?', answer: 'You can browse the public pages without an account, but the full experience is for signed-in users.' },
 ];
@@ -41,7 +41,7 @@ export default function HomePage() {
     <div className="min-h-dvh bg-[#fffaf5] pb-10 text-slate-900">
       <header className="mx-auto w-full max-w-[430px] px-4 pb-4 pt-5">
         <nav className="flex items-center justify-between text-sm text-slate-600">
-          <div className="font-semibold uppercase tracking-[0.2em] text-orange-600">FriendBook</div>
+          <div className="font-semibold uppercase tracking-[0.2em] text-orange-600">Amiora</div>
           <div className="flex items-center gap-2">
             <Link href="/help" className="rounded-full px-3 py-2 transition hover:bg-slate-100">Help</Link>
             <Link href="/login" className="rounded-full bg-slate-900 px-3 py-2 font-medium text-white">Log in</Link>

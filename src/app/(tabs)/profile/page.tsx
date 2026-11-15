@@ -3,10 +3,10 @@
 import Link from 'next/link';
 import { ArrowUpRight, MapPin, ShieldCheck, Star } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { getCurrentProfile, type FriendBookProfile } from '@/lib/supabase/profile';
+import { getCurrentProfile, type AmioraProfile } from '@/lib/supabase/profile';
 
 export default function ProfilePage() {
-  const [profile, setProfile] = useState<FriendBookProfile | null>(null);
+  const [profile, setProfile] = useState<AmioraProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -37,7 +37,7 @@ export default function ProfilePage() {
     };
   }, []);
 
-  const displayName = profile?.full_name || 'FriendBook member';
+  const displayName = profile?.full_name || 'Amiora member';
   const city = profile?.city || 'Location not set';
   const roleLabel = profile?.role === 'host' ? 'Host profile' : profile?.role === 'admin' ? 'Admin' : 'Member';
 

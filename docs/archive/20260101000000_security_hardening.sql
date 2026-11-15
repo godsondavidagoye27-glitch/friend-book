@@ -1,4 +1,4 @@
--- Security hardening review draft for FriendBook.
+-- Security hardening review draft for Amiora.
 -- This file is intentionally staged for review and is not applied until the SQL is approved.
 -- Purpose:
 -- 1) lock down profile access and prevent cross-user data leakage

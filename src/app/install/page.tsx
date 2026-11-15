@@ -9,7 +9,7 @@ export default function InstallPage() {
 
       <main className="mx-auto flex w-full max-w-[430px] flex-col gap-5 px-4 py-5">
         <section className="rounded-[30px] bg-gradient-to-br from-orange-500 to-orange-400 p-5 text-white shadow-lg shadow-orange-200">
-          <h2 className="text-2xl font-bold">Install FriendBook like an app.</h2>
+          <h2 className="text-2xl font-bold">Install Amiora like an app.</h2>
           <p className="mt-2 text-sm leading-6 text-orange-50">This keeps the experience fast, mobile-first, and easy to access whenever you need it.</p>
         </section>
 

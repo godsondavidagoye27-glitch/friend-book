@@ -51,7 +51,7 @@ export default function LoginPage() {
       <main className="mx-auto flex w-full max-w-[430px] flex-col gap-5 px-4 py-5">
         <section className="rounded-[30px] bg-gradient-to-br from-orange-500 to-orange-400 p-5 text-white shadow-lg shadow-orange-200">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-orange-100">Sign in</p>
-          <h2 className="mt-2 text-2xl font-bold">Continue with FriendBook.</h2>
+          <h2 className="mt-2 text-2xl font-bold">Continue with Amiora.</h2>
           <p className="mt-3 text-sm leading-6 text-orange-50">Use your email or Google account to securely continue to the onboarding flow.</p>
         </section>
 

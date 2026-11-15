@@ -1,19 +1,70 @@
-import { BadgeCheck, Filter, Heart, Menu, Search, Sparkles, Star } from 'lucide-react';
+'use client';
+
+import { Filter, Heart, Menu, Search, Sparkles, Star } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { getPublicHosts, type PublicHost } from '@/lib/supabase/hosts';
 
 const categories = ['Yoga', 'Conversation', 'Football', 'Walks', 'Language', 'Gym'];
 
-const hosts = [
+const fallbackHosts = [
   { name: 'Maya Lee', location: '1.2 km away', price: 28, rating: 4.9, reviews: 18, category: 'Conversation', verified: true },
   { name: 'Daniel Cruz', location: '2.4 km away', price: 35, rating: 4.8, reviews: 32, category: 'Football', verified: true },
   { name: 'Noor Hassan', location: '0.8 km away', price: 24, rating: 4.7, reviews: 12, category: 'Language', verified: true },
 ];
 
 export default function ExplorePage() {
+  const [hosts, setHosts] = useState<PublicHost[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadHosts() {
+      try {
+        const data = await getPublicHosts();
+        if (active) {
+          setHosts(data);
+        }
+      } catch (error) {
+        console.error('Failed to load public hosts', error);
+        if (active) {
+          setHosts([]);
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    }
+
+    void loadHosts();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const visibleHosts = useMemo(() => {
+    if (hosts.length > 0) {
+      return hosts.map((host) => ({
+        name: host.full_name || 'Amiora host',
+        location: host.city || host.public_area || 'Local area',
+        price: host.price_per_hour,
+        rating: 4.8,
+        reviews: 18,
+        category: host.headline || 'Nearby host',
+        verified: host.verified,
+      }));
+    }
+
+    return fallbackHosts;
+  }, [hosts]);
+
   return (
     <div className="w-full px-4 pb-6 pt-5">
       <header className="flex items-center justify-between pb-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">FriendBook</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Amiora</p>
           <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900">Nearby friends</h1>
         </div>
         <button type="button" aria-label="Open menu" className="flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-soft">
@@ -52,7 +103,7 @@ export default function ExplorePage() {
       <div className="mb-5 flex items-center justify-between rounded-2xl bg-orange-50 p-3">
         <div>
           <p className="text-xs font-medium uppercase tracking-[0.12em] text-orange-700">Today</p>
-          <p className="mt-1 text-sm text-slate-700">23 hosts available within 5 km</p>
+          <p className="mt-1 text-sm text-slate-700">{loading ? 'Loading nearby hosts...' : `${visibleHosts.length} hosts available now`}</p>
         </div>
         <button type="button" className="inline-flex items-center gap-2 rounded-full bg-orange-500 px-3 py-2 text-xs font-semibold text-white">
           <Filter className="h-3.5 w-3.5" aria-hidden="true" />
@@ -61,7 +112,7 @@ export default function ExplorePage() {
       </div>
 
       <section className="space-y-4">
-        {hosts.map((host) => (
+        {visibleHosts.map((host) => (
           <article key={host.name} className="overflow-hidden rounded-[28px] bg-white shadow-soft ring-1 ring-slate-100">
             <div className="relative h-52 w-full bg-[radial-gradient(circle_at_top,_rgba(251,146,60,0.5),_rgba(255,255,255,0)_40%),linear-gradient(135deg,#fed7aa,#fff7ed)]">
               <div className="absolute inset-x-0 top-0 flex items-center justify-between p-3">

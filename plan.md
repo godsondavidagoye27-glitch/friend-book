@@ -1,4 +1,4 @@
-# FriendBook planning index
+# Amiora planning index
 
 This repo is currently in the security-hardening review phase for the app foundation. The product spec and route inventory are tracked in the docs below, and the work is intentionally paused before database changes are applied.
 

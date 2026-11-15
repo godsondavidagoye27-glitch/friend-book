@@ -54,7 +54,7 @@ export default function OnboardingPage() {
       setIsSubmitting(true);
       setError(null);
       await saveProfileFromOnboarding({
-        full_name: fullName.trim() || 'FriendBook user',
+        full_name: fullName.trim() || 'Amiora user',
         city: city.trim() || 'San Francisco',
         bio: bio.trim() || null,
         username: fullName.trim().toLowerCase().replace(/\s+/g, '.'),
@@ -135,7 +135,7 @@ export default function OnboardingPage() {
             </label>
 
             <div className="rounded-[24px] border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
-              You must be 18+ to use FriendBook. You are confirming this as part of your onboarding.
+              You must be 18+ to use Amiora. You are confirming this as part of your onboarding.
             </div>
 
             {error ? (

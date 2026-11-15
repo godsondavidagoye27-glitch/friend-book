@@ -1,6 +1,6 @@
 {
-  "name": "FriendBook",
-  "short_name": "FriendBook",
+  "name": "Amiora",
+  "short_name": "Amiora",
   "description": "Book nearby people for social time, conversations, and shared activities.",
   "start_url": "/",
   "display": "standalone",

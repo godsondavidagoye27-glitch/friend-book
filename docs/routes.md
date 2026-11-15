@@ -20,8 +20,8 @@
 | `/auth/callback` | Public | Auth callback stub | TODO |
 | `/auth/check-email` | Public | Auth stub | TODO |
 | `/onboarding` | Signed in | Profile onboarding | TODO |
-| `/explore` | Signed in | Host data | TODO |
-| `/map` | Signed in | Map data | TODO |
+| `/explore` | Signed in | Host data | Live Supabase-backed |
+| `/map` | Signed in | Map data | Live Supabase-backed |
 | `/host/[id]` | Signed in | Host profile data | TODO |
 | `/saved` | Signed in | Favorites | TODO |
 | `/notifications` | Signed in | Notifications | TODO |

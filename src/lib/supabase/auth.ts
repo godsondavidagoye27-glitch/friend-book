@@ -55,14 +55,11 @@ export async function saveProfileFromOnboarding(data: {
   const { error } = await supabase.from('profiles').upsert(
     {
       id: user.id,
-      email: user.email ?? null,
       full_name: data.full_name,
       username: data.username ?? null,
       city: data.city,
       bio: data.bio ?? null,
       accepted_terms_at: new Date().toISOString(),
-      role: 'user',
-      updated_at: new Date().toISOString(),
     },
     { onConflict: 'id' },
   );

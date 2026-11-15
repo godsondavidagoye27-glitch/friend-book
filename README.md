@@ -1,6 +1,6 @@
-# FriendBook
+# Amiora
 
-FriendBook is a mobile-first marketplace for booking social time with nearby people.
+Amiora is a mobile-first marketplace for booking social time with nearby people.
 
 ## Local setup
 
@@ -14,14 +14,14 @@ FriendBook is a mobile-first marketplace for booking social time with nearby peo
 
 ```bash
 NEXT_PUBLIC_APP_ENV=development
-NEXT_PUBLIC_APP_NAME=FriendBook
+NEXT_PUBLIC_APP_NAME=Amiora
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_ANON_KEY=your-anon-key
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 NEXT_PUBLIC_MAPBOX_TOKEN=your-mapbox-token
-NEXT_PUBLIC_SUPPORT_EMAIL=support@friendbook.example
+NEXT_PUBLIC_SUPPORT_EMAIL=support@amiora.example
 ```
 
 ## Supabase setup checklist
@@ -39,7 +39,7 @@ NEXT_PUBLIC_SUPPORT_EMAIL=support@friendbook.example
 
 - Public pages are implemented in the Next.js app router and mobile-first styling is kept in Tailwind.
 - The app uses a warm orange visual identity with bottom navigation, safe-area spacing, and touch-friendly controls.
-- Phase 2 payment and verification integrations are intentionally stubbed behind clear service boundaries.
+- Phase 2 verification and payment integrations are intentionally stubbed behind clear service boundaries.
 - The database migration and seed files live under `supabase/migrations` and `supabase/seed.sql`.
 - Server-side Supabase session management and route protection are now wired through the app middleware and auth callback.
 
@@ -47,4 +47,4 @@ NEXT_PUBLIC_SUPPORT_EMAIL=support@friendbook.example
 
 - Apply the hardened SQL migration once it is approved.
 - Add real auth flows and profile creation after the session foundation is in place.
-- Wire Mapbox and future payment / verification services in Phase 2.
+- Wire Mapbox and future verification services in Phase 2.
